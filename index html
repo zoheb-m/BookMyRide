@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideNow - Book Your Ride</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .otp-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+        }
+
+        .otp-input:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .otp-display {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .otp-display .otp-code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 8px;
+            margin: 10px 0;
+        }
+
+        .otp-display p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .ride-details {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .ride-details p {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .ride-details strong {
+            color: #333;
+        }
+
+        .resend-link {
+            text-align: center;
+            margin-top: 15px;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 RideNow</h1>
+            <p>Your ride, just a tap away</p>
+        </div>
+
+        <div class="content">
+            <!-- Step 1: Phone Number -->
+            <div class="step active" id="step1">
+                <div class="input-group">
+                    <label for="phone">Enter Your Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+1 (555) 123-4567" maxlength="17">
+                </div>
+                <div class="input-group">
+                    <label for="pickup">Pickup Location</label>
+                    <input type="text" id="pickup" placeholder="Enter pickup address">
+                </div>
+                <div class="input-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" placeholder="Enter destination">
+                </div>
+                <button onclick="requestOTP()">Request Ride</button>
+            </div>
+
+            <!-- Step 2: OTP Display -->
+            <div class="step" id="step2">
+                <div class="otp-display">
+                    <p>Your OTP Code</p>
+                    <div class="otp-code" id="generatedOTP">----</div>
+                    <p>Valid for 5 minutes</p>
+                </div>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                    Enter this code to confirm your ride
+                </p>
+                <div class="otp-container">
+                    <input type="text" class="otp-input" maxlength="1" id="otp1">
+                    <input type="text" class="otp-input" maxlength="1" id="otp2">
+                    <input type="text" class="otp-input" maxlength="1" id="otp3">
+                    <input type="text" class="otp-input" maxlength="1" id="otp4">
+                </div>
+                <button onclick="verifyOTP()">Verify & Confirm Ride</button>
+                <div class="resend-link" onclick="regenerateOTP()">Resend OTP</div>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div class="step" id="step3">
+                <div class="success-icon">✓</div>
+                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Ride Confirmed!</h2>
+                <div class="ride-details">
+                    <p><strong>Pickup:</strong> <span id="confirmPickup"></span></p>
+                    <p><strong>Destination:</strong> <span id="confirmDestination"></span></p>
+                    <p><strong>Driver:</strong> John Smith</p>
+                    <p><strong>Vehicle:</strong> Toyota Camry - ABC 1234</p>
+                    <p><strong>ETA:</strong> 5 minutes</p>
+                </div>
+                <button onclick="resetApp()">Book Another Ride</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOTP = '';
+        let phoneNumber = '';
+        let pickup = '';
+        let destination = '';
+
+        function generateOTP() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        function showStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+        }
+
+        function requestOTP() {
+            phoneNumber = document.getElementById('phone').value;
+            pickup = document.getElementById('pickup').value;
+            destination = document.getElementById('destination').value;
+
+            if (!phoneNumber || !pickup || !destination) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            currentOTP = generateOTP();
+            document.getElementById('generatedOTP').textContent = currentOTP;
+            showStep(2);
+        }
+
+        function regenerateOTP() {
+            currentOTP = generateOTP();
+            document.getElementById('generatedOTP').textContent = currentOTP;
+            
+            // Clear OTP inputs
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`otp${i}`).value = '';
+            }
+        }
+
+        function verifyOTP() {
+            const enteredOTP = 
+                document.getElementById('otp1').value +
+                document.getElementById('otp2').value +
+                document.getElementById('otp3').value +
+                document.getElementById('otp4').value;
+
+            if (enteredOTP === currentOTP) {
+                document.getElementById('confirmPickup').textContent = pickup;
+                document.getElementById('confirmDestination').textContent = destination;
+                showStep(3);
+            } else {
+                alert('Invalid OTP. Please try again.');
+                for (let i = 1; i <= 4; i++) {
+                    document.getElementById(`otp${i}`).value = '';
+                }
+                document.getElementById('otp1').focus();
+            }
+        }
+
+        function resetApp() {
+            document.getElementById('phone').value = '';
+            document.getElementById('pickup').value = '';
+            document.getElementById('destination').value = '';
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`otp${i}`).value = '';
+            }
+            currentOTP = '';
+            showStep(1);
+        }
+
+        // OTP input auto-focus
+        document.querySelectorAll('.otp-input').forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < 3) {
+                    document.getElementById(`otp${index + 2}`).focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    document.getElementById(`otp${index}`).focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
